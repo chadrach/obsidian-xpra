@@ -11,7 +11,7 @@ The guide assumes you have created a new Oracle Cloud instance with a fresh inst
 Follow these steps after you are connected to the virtual machine via a terminal (e.g., Windows PowerShell):
 
 1. **Create a New Script File:**  
-    Once connected to the VM via the terminal, create a new file called `setup.sh` using your favorite text editor. For example, using nano:
+    Once connected to the VM via the terminal, create a new file called `setup.sh` using nano:
 
     ```bash
     nano setup.sh
