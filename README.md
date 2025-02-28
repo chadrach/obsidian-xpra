@@ -2,9 +2,11 @@
 Script to automate setting up Obsidian.md on a browser-accessible Xpra server.
 
 ## Overview
-This bash script automates the steps necessary to setup **Xpra** to run **Obsidian** in a web browser on an **Ubuntu 22.04 (Linux) ARM64-based virtual machine**. The script can be run with minimal Linux or terminal experience using the steps provided below. For purposes of this guide, the VM is running as an Instance on the Oracle Cloud platform that qualifies for their "free tier" (ARM/Ampere architecture with up to 4 CPU cores and 24GB memory at the time of writing).
+This bash script automates the steps necessary to setup a **Ubuntu 22.04 (Linux) ARM64-based virtual machine** to run **Obsidian.md** within in a web browser using a light-weight remote desktop server called **Xpra**. Once running, the server-based Obsidian app can be accessed from anywhere using a unique URL and password. The script can be run with minimal Linux or terminal experience using the steps provided below. For purposes of this guide, the VM is running as an Instance on the Oracle Cloud platform that qualifies for their "free tier" (ARM/Ampere architecture with up to 4 CPU cores and 24GB memory at the time of writing).
 
 The guide assumes you have created a new Oracle Cloud instance with a fresh install of Ubuntu 22.04 and have connected to the terminal via SSH or some other method. Instructions to create and connect to the instance can be found here: https://docs.oracle.com/en-us/iaas/Content/Compute/tutorials/first-linux-instance/overview.htm. 
+
+**Warning:** Setting up access to a remote instance of Obsidian and all of your vault data is *inherently* more risky than Obsidian's normal use, where your files are stored and accessed only on your local machine. The security built into this setup is the *bare minimum* to try to ward off unwanted access to your Xpra server and your vault. Use caution with sensitive files. If in doubt, don't follow a guide posted by a stranger on the internet.
 
 ## Loading and running the script
 
