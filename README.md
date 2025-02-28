@@ -1,4 +1,4 @@
-# obsidna-xpra
+# obsidian-xpra
 Script to automate setting up Obsidian.md on a browser-accessible Xpra server.
 
 ## Overview
