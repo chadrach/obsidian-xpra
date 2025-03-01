@@ -5,7 +5,7 @@ export DEBIAN_FRONTEND=noninteractive
 # downloads and sets up Obsidian, updates UDP buffer sizes, and creates helper commands.
 # It creates two helper commands:
 #   - "tunnel": to restart the Cloudflared Quick Tunnel and display its unique URL.
-#   - "xpra-pass": to update the Xpra password.
+#   - "resetpwd": to update the Xpra password.
 #
 # Note: The Xpra service is configured to use the password file at /home/ubuntu/.xpra/xpra_passwd.txt.
 
