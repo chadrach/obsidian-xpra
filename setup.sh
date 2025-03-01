@@ -5,7 +5,7 @@ export DEBIAN_FRONTEND=noninteractive
 # downloads and sets up Obsidian, updates UDP buffer sizes, and creates helper commands.
 # It creates two helper commands:
 #   - "tunnel": to restart the Cloudflared Quick Tunnel and display its unique URL.
-#   - "resetpwd": to update the Xpra password.
+#   - "xpra-pass": to update the Xpra password.
 #
 # Note: The Xpra service is configured to use the password file at /home/ubuntu/.xpra/xpra_passwd.txt.
 
@@ -55,7 +55,7 @@ After=network.target
 
 [Service]
 ExecStartPre=/bin/sleep 5
-ExecStart=/usr/bin/xpra start :100 --bind-ssl=127.0.0.1:8080 --html=on --start="/home/ubuntu/start-obsidian.sh" --start-on-last-client-exit="/home/ubuntu/start-obsidian.sh" --ssl-auth=file:filename=/home/ubuntu/.xpra/xpra_passwd.txt  --ssl-cert=/etc/xpra/ssl/xpra.crt --ssl-key=/etc/xpra/ssl/xpra.key
+ExecStart=/usr/bin/xpra start :100 --bind-ssl=127.0.0.1:8080 --html=on --start="/home/ubuntu/start-obsidian.sh" --start-on-last-client-exit="/home/ubuntu/start-obsidian.sh" --ssl-auth=file:filename=/home/ubuntu/.xpra/xpra_passwd.txt  --ssl-cert=/home/ubuntu/.xpra/xpra.crt --ssl-key=/home/ubuntu/.xpra/xpra.key
 ExecStartPost=/bin/bash -c '"'"'while true; do if ! pgrep -x "xpra" > /dev/null; then sudo systemctl restart xpra.service; fi; sleep 5; done &'"'"'
 WorkingDirectory=/home/ubuntu
 User=ubuntu
@@ -67,14 +67,14 @@ WantedBy=multi-user.target
 EOL'
 
 # Define certificate directory and file names
-CERT_DIR="/etc/xpra/ssl"
+CERT_DIR="$HOME/.xpra"
 CRT_FILE="${CERT_DIR}/xpra.crt"
 KEY_FILE="${CERT_DIR}/xpra.key"
 
 # Create the certificate directory 
 if [ ! -d "$CERT_DIR" ]; then
-  sudo mkdir -p "$CERT_DIR"
-  sudo chmod 700 "$CERT_DIR"
+  mkdir -p "$CERT_DIR"
+  chmod 750 "$CERT_DIR"
 fi
 
 # Generate a self-signed certificate with a non-interactive subject.
@@ -85,7 +85,6 @@ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -subj "/C=US/ST=California/L=SanFrancisco/O=ExampleOrg/OU=IT/CN=localhost"
 
 # Create the Xpra password file at the proper location.
-mkdir -p /home/ubuntu/.xpra
 echo -n "$XPRA_PASSWORD" > /home/ubuntu/.xpra/xpra_passwd.txt
 
 # Reload and enable the Xpra service.
