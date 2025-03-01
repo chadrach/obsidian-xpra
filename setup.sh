@@ -19,7 +19,7 @@ fi
 sudo apt update && sudo apt upgrade -y
 
 # Install required dependencies.
-sudo apt install -y xpra xvfb wget zlib1g-dev fuse libasound2 curl netfilter-persistent wmctrl
+sudo apt install -y xpra xvfb wget zlib1g-dev fuse libasound2 curl wmctrl
 
 # Download the Obsidian AppImage (ARM64 version 1.8.7).
 wget -O /home/ubuntu/Obsidian.AppImage https://github.com/obsidianmd/obsidian-releases/releases/download/v1.8.7/Obsidian-1.8.7-arm64.AppImage
