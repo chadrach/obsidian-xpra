@@ -5,7 +5,7 @@ export DEBIAN_FRONTEND=noninteractive
 # downloads and sets up Obsidian, updates UDP buffer sizes, and creates helper commands.
 # It creates two helper commands:
 #   - "tunnel": to restart the Cloudflared Quick Tunnel and display its unique URL.
-#   - "xpra-pass": to update the Xpra password.
+#   - "resetpwd": to update the Xpra password.
 #
 # Note: The Xpra service is configured to use the password file at /home/ubuntu/.xpra/xpra_passwd.txt.
 
@@ -131,8 +131,8 @@ tail -n 20 /home/ubuntu/cloudflared_quick.log
 EOF'
 sudo chmod +x /usr/local/bin/tunnel
 
-# Create the helper command "xpra-pass" to update the Xpra password.
-sudo bash -c 'cat << "EOF" > /usr/local/bin/xpra-pass
+# Create the helper command "resetpwd" to update the Xpra password.
+sudo bash -c 'cat << "EOF" > /usr/local/bin/resetpwd
 #!/bin/bash
 echo "Enter new Xpra password:"
 read -sp "New password: " newpass
@@ -142,10 +142,10 @@ echo -n "$newpass" > /home/ubuntu/.xpra/xpra_passwd.txt
 sudo systemctl restart xpra.service
 echo "Xpra password updated successfully."
 EOF'
-sudo chmod +x /usr/local/bin/xpra-pass
+sudo chmod +x /usr/local/bin/resetpwd
 
 echo -e "\033[1;32mSetup complete\033[0m"
 echo -e "\033[1;33mIt is recommended that you reboot your system using: sudo reboot\033[0m"
 echo -e "\033[1;33mAfter reboot, and for any subsequent reboot, run 'tunnel' to restart the Cloudflared Quick Tunnel and obtain your new unique URL.\033[0m"
-echo -e "\033[1;33mIf you need to change your password, use the command 'xpra-pass' and enter the new password when prompted.\033[0m"
+echo -e "\033[1;33mIf you need to change your password, use the command 'resetpwd' and enter the new password when prompted.\033[0m"
 echo -e "\033[1;33mIf you need to reopen your Obsidian window, disconnect and reconnect to the Xpra server or refresh your browser window.\033[0m"
