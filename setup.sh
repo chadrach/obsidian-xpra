@@ -19,7 +19,7 @@ fi
 sudo apt update && sudo apt upgrade -y
 
 # Install required dependencies.
-sudo apt install -y xpra xvfb wget zlib1g-dev fuse libasound2 curl wmctrl
+sudo apt install -y xpra xvfb wget zlib1g-dev fuse libasound2 curl netfilter-persistent wmctrl
 
 # Download the Obsidian AppImage (ARM64 version 1.8.7).
 wget -O /home/ubuntu/Obsidian.AppImage https://github.com/obsidianmd/obsidian-releases/releases/download/v1.8.7/Obsidian-1.8.7-arm64.AppImage
@@ -55,7 +55,7 @@ After=network.target
 
 [Service]
 ExecStartPre=/bin/sleep 5
-ExecStart=/usr/bin/xpra start :100 --bind-tcp=127.0.0.1:8080 --html=on --start="/home/ubuntu/start-obsidian.sh" --start-on-last-client-exit="/home/ubuntu/start-obsidian.sh" --tcp-auth=file:filename=/home/ubuntu/.xpra/xpra_passwd.txt 
+ExecStart=/usr/bin/xpra start :100 --bind-ssl=127.0.0.1:8080 --html=on --start="/home/ubuntu/start-obsidian.sh" --start-on-last-client-exit="/home/ubuntu/start-obsidian.sh" --ssl-auth=file:filename=/home/ubuntu/.xpra/xpra_passwd.txt  --ssl-cert=/etc/xpra/ssl/xpra.crt --ssl-key=/etc/xpra/ssl/xpra.key
 ExecStartPost=/bin/bash -c '"'"'while true; do if ! pgrep -x "xpra" > /dev/null; then sudo systemctl restart xpra.service; fi; sleep 5; done &'"'"'
 WorkingDirectory=/home/ubuntu
 User=ubuntu
@@ -65,6 +65,24 @@ RemainAfterExit=yes
 [Install]
 WantedBy=multi-user.target
 EOL'
+
+# Define certificate directory and file names
+CERT_DIR="/etc/xpra/ssl"
+CRT_FILE="${CERT_DIR}/xpra.crt"
+KEY_FILE="${CERT_DIR}/xpra.key"
+
+# Create the certificate directory 
+if [ ! -d "$CERT_DIR" ]; then
+  sudo mkdir -p "$CERT_DIR"
+  sudo chmod 700 "$CERT_DIR"
+fi
+
+# Generate a self-signed certificate with a non-interactive subject.
+# The subject omits the email address field.
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout "$KEY_FILE" \
+  -out "$CRT_FILE" \
+  -subj "/C=US/ST=California/L=SanFrancisco/O=ExampleOrg/OU=IT/CN=localhost"
 
 # Create the Xpra password file at the proper location.
 mkdir -p /home/ubuntu/.xpra
@@ -105,7 +123,7 @@ pkill -f "cloudflared tunnel --url" 2>/dev/null
 # Remove the previous log file.
 rm -f /home/ubuntu/cloudflared_quick.log
 # Start a new quick tunnel.
-nohup cloudflared tunnel --url http://localhost:8080 > /home/ubuntu/cloudflared_quick.log 2>&1 &
+nohup cloudflared tunnel --url https://localhost:8080 --no-tls-verify > /home/ubuntu/cloudflared_quick.log 2>&1 &
 # Wait for the tunnel to establish.
 sleep 10
 echo "Cloudflared Quick Tunnel connection details (unique URL):"
