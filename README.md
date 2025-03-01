@@ -1,4 +1,4 @@
-# obsidian-xpra
+# Browser-based Obsidian using Xpra
 Script to automate setting up Obsidian.md on a browser-accessible Xpra server.
 
 ## Overview
@@ -60,5 +60,89 @@ Follow these steps after you are connected to the virtual machine via a terminal
 After script completes, you can manage your tunnel and update your password using these terminal commands:
     
 - `tunnel` - to restart the Cloudflare Quick Tunnel and display the new URL. This will be necessary any time the system reboots.
-- `xpra-pass` - to change your Xpra password later on.
+- `resetpwd` - to change your Xpra password later on.
 
+## What's happening here?
+
+[Obsidian.md](https://obsidian.md) is expressly designed to operate as a locally-installed application, and the devs have repeatedly emphasized that creating a web-based version of Obsidian goes against their [design philosophy](https://obsidian.md/about), which includes providing full end-to-end encryption of sync'd files. 
+
+The only way to access a web-based version of Obsidian is to host it yourself, to somehow run the app locally and stream it through something like a [docker container](https://github.com/sytone/obsidian-remote) or a full remote desktop, like an AWS WorkSpace or Paperspace. The former requires a dedicated machine, and the latter are pretty expensive for this use case.
+
+This solution attempts to split the difference: use a *free* (as of now) virtual machine provided by Oracle Cloud to stream just the Obsidian window--not a full desktop--and not as a container but as an AppImage running on Linux. [Xpra](https://github.com/Xpra-org/xpra/) is a software that allows us do that. 
+
+Here's an overview of what the script does:
+
+1) Updates and upgrades Linux/Ubuntu system packages
+2) Installs several dependencies and libraries that are required for functionality, including:
+	- **xpra**: The remote display server
+	- **xvfb**: Virtual framebuffer required by Xpra
+	- **wget**: To download the Obsidian AppImage
+	- **zlib1g-dev**: Compression library needed by Obsidian
+	- **fuse**: Required to run AppImage files
+	- **libasound2**: Provides sound support for applications, required for Obsidian to run
+	- **curl**: Used to setup Cloudflare
+	- **wmctrl**: To control the Obsidian window once its open
+3) Downloads the Linux ARM64 version of Obsidian and creates a start script that Xpra can use to launch Obsidian
+4) Creates a start script that will automatically start Xpra on a reboot, keep it running, keeps Obsidian open, and sets up password authentication to access from the browser.
+5) Generates a self-signed SSL certificate using OpenSSL for use by Xpra.
+6) Downloads Cloudflare and creates a script that will start a [Quick Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/trycloudflare/) with a simple command `tunnel` and output the unique URL that is generated. This tunnel provides a basic level of security by hiding the actual IP address and port of the virtual machine behind Cloudflare's protocols. The SSL certificate we created earlier secures traffic between Cloudflare and Xpra.
+7) Creates a script to prompt the user for a new password with a simple command `resetpwd`
+8) Performs a couple other optimizations: Xpra content type configuration, update buffer sizes
+
+All of this results in a reasonably reliable "website" that you can visit using your browser of choice to view and edit your Obsidian vaults. With the right instance setup on Oracle Cloud, you can keep the VM running 100% of the time for no charge, and you should only need to re-access the terminal for tweaks, system updates and to restart the tunnel or reset your password. 
+
+## More disclaimers
+
+**Who am I?** A nobody who knows nothing. I have no connection to Obsidian other than being a longtime user. I had never accessed a Linux terminal in my life and had never heard of Xpra before a few weeks ago when I started working on this idea, and I used ChatGPT (along with a lot of documentation) to not only figure out everything that would be required for this setup, but also to take all of the steps and convert them into a single script.
+
+All of which is to say that I've tested this a few times, and it works, but hell if I know why, and if for some reason it doesn't work for you, I'm not going to be able to help. But I can point you to my good friend, ChatGPT, for troubleshooting.
+
+Also, the security measures, such as they are, were also ChatGPT's idea. Are they adequate? Probably should ask someone with experience. I really can't emphasize enough that you should not expose to the internet what you don't want the internet to eventually find. A best practice could be to only run the VM when you need remote access to your vault. That would require connecting via SSH to restart the tunnel.
+
+## Usage and quirks
+
+### Remote vault sync
+
+This setup is almost exclusively designed to use [Obsidian Sync](https://obsidian.md/sync), their built-in vault sync service, in order to synchronize files from this VM to any other device you'd access your vault from. I have been a paying customer for almost 3 years and highly recommend it. For that reason, I haven't even explored what another option would be to sync files. I don't know if Google Drive or iCloud have Linux apps. My guess is that [Obsidian Git](https://github.com/Vinzent03/obsidian-git) is probably the most compatible option.
+
+### Xpra fine tuning
+
+I've found that Xpra streaming is fairly decent, often better and certainly no worse than the off-the-shelf virtual desktops I've tried. The most critical performance setting is making Xpra treat Obsidian as a text editor instead of a browser (this is built into the script). Xpra has some kind of encoding optimizations baked in that massively outperform anything you can tweak yourself (without python skills).
+
+That said, there are some extra options to tinker with if you're so inclined. These are summarized here: [xpra/docs/Usage/Encodings.md at master ￂﾷ Xpra-org/xpra ￂﾷ GitHub](https://github.com/Xpra-org/xpra/blob/master/docs/Usage/Encodings.md)
+
+You can see even more options by accessing the help file with the terminal command:
+
+```
+xpra --help
+```
+
+All of the options get added to the start command--in our case, the `ExecStart` line of the systemd file, which is accessed here:
+
+```
+sudo nano /etc/systemd/system/xpra.service
+```
+
+These are the options I have played with myself:
+
+```
+--min-quality=90
+--min-speed=10
+--auto-refresh-delay=0.05
+--video-scaling=0
+```
+
+If you do update this file, make sure to restart the service with this command:
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable xpra.service
+```
+
+### Obsidian soft locks
+
+Very occasionally if Xpra with Obsidian has been open in my browser and not in use for a time, Obsidian will soft lock--no cursor, no inputs recognized. But the Xpra hover icons are responsive. I haven't figured out why and haven't found anything strange in logs. Disconnecting and reconnecting, refreshing the browser window or if needed re-opening in a new tab resolves the issue. 
+
+### Shift+Tab
+
+Used for outdenting, especially when using outliner-style notes. It doesn't work here. It's a known bug in Xpra (one of several keyboard-related bugs). Best workaround I've found is to hotkey the outdenting command build into the Outliner plugin, but unfortunately to a different key combination. 
