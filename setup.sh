@@ -84,7 +84,8 @@ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -out "$CRT_FILE" \
   -subj "/C=US/ST=California/L=SanFrancisco/O=ExampleOrg/OU=IT/CN=localhost"
 
-chmod 644 "$CRT_FILE" "$KEY_FILE"
+sudo chmod 644 "$CRT_FILE"
+sudo chmod 644 "$KEY_FILE"
 
 # Create the Xpra password file at the proper location.
 echo -n "$XPRA_PASSWORD" > /home/ubuntu/.xpra/xpra_passwd.txt
