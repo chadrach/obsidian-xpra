@@ -26,7 +26,7 @@ wget -O /home/ubuntu/Obsidian.AppImage https://github.com/obsidianmd/obsidian-re
 chmod +x /home/ubuntu/Obsidian.AppImage
 
 # Modify Xpra's content type configuration to force text rendering.
-sudo bash -c 'echo "role:browser=text" > /usr/share/xpra/content-type/90_fallback.conf'
+sudo bash -c 'printf "class:obsidian=text\nrole:browser=text\n" > /usr/share/xpra/content-type/90_fallback.conf'
 
 # Create a startup script for Obsidian.
 cat << 'EOF' > /home/ubuntu/start-obsidian.sh
