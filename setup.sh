@@ -56,11 +56,11 @@ After=network.target
 [Service]
 ExecStartPre=/bin/sleep 5
 ExecStart=/usr/bin/xpra start :100 --bind-ssl=127.0.0.1:8080 --html=on --start="/home/ubuntu/start-obsidian.sh" --start-on-last-client-exit="/home/ubuntu/start-obsidian.sh" --ssl-auth=file:filename=/home/ubuntu/.xpra/xpra_passwd.txt  --ssl-cert=/home/ubuntu/.xpra/xpra.crt --ssl-key=/home/ubuntu/.xpra/xpra.key
-ExecStartPost=/bin/bash -c '"'"'while true; do if ! pgrep -x "xpra" > /dev/null; then sudo systemctl restart xpra.service; fi; sleep 5; done &'"'"'
 WorkingDirectory=/home/ubuntu
 User=ubuntu
 Environment=DISPLAY=:100
-RemainAfterExit=yes
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
@@ -95,8 +95,6 @@ sudo systemctl daemon-reload
 sudo systemctl enable xpra.service
 sudo systemctl start xpra.service
 
-# Allow the Xpra service to restart without a sudo password.
-echo "ubuntu ALL=(ALL) NOPASSWD: /bin/systemctl restart xpra.service" | sudo tee /etc/sudoers.d/xpra
 
 # Install Cloudflared for tunneling.
 curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
