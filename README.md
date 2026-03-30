@@ -84,7 +84,7 @@ Here's an overview of what the script does:
 	- **libasound2t64**: Provides sound support for applications, required for Obsidian to run
 	- **curl**: Used to setup Cloudflare
 	- **wmctrl**: To control the Obsidian window once its open
-3) Downloads the Linux ARM64 version of Obsidian and creates a start script that Xpra can use to launch Obsidian
+3) Downloads the latest Linux ARM64 version of Obsidian and creates a start script that Xpra can use to launch Obsidian
 4) Creates a start script that will automatically start Xpra on a reboot, keep it running, keeps Obsidian open, and sets up password authentication to access from the browser.
 5) Generates a self-signed SSL certificate using OpenSSL for use by Xpra.
 6) Downloads Cloudflare and creates a script that will start a [Quick Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/trycloudflare/) with a simple command `tunnel` and output the unique URL that is generated. This tunnel provides a basic level of security by hiding the actual IP address and port of the virtual machine behind Cloudflare's protocols. The SSL certificate we created earlier secures traffic between Cloudflare and Xpra.

@@ -27,8 +27,10 @@ sudo apt update
 # Install required dependencies.
 sudo apt install -y xpra xpra-html5 xvfb wget zlib1g-dev libfuse2t64 libasound2t64 curl wmctrl
 
-# Download the Obsidian AppImage (ARM64 version 1.8.7).
-wget -O /home/ubuntu/Obsidian.AppImage https://github.com/obsidianmd/obsidian-releases/releases/download/v1.8.7/Obsidian-1.8.7-arm64.AppImage
+# Download the latest Obsidian AppImage (ARM64).
+OBSIDIAN_TAG=$(curl -fsSL https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+OBSIDIAN_VERSION=${OBSIDIAN_TAG#v}
+wget -O /home/ubuntu/Obsidian.AppImage "https://github.com/obsidianmd/obsidian-releases/releases/download/${OBSIDIAN_TAG}/Obsidian-${OBSIDIAN_VERSION}-arm64.AppImage"
 chmod +x /home/ubuntu/Obsidian.AppImage
 
 # Modify Xpra's content type configuration to force text rendering.
