@@ -48,7 +48,7 @@ if wmctrl -l | grep -qi "Obsidian"; then
   echo "Obsidian window already exists. Not launching a new instance."
 else
   echo "Starting Obsidian..."
-  /home/ubuntu/Obsidian.AppImage --disable-gpu --enable-unsafe-swiftshader --disable-software-rasterizer &>> /home/ubuntu/start_obsidian.log &
+  /home/ubuntu/Obsidian.AppImage --no-sandbox --disable-gpu --enable-unsafe-swiftshader --disable-software-rasterizer &>> /home/ubuntu/start_obsidian.log &
   sleep 5         # Wait for Obsidian to start and create its window
 fi
 
