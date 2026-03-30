@@ -29,7 +29,7 @@ sudo apt update
 sudo apt install -y xpra xpra-html5 xvfb wget zlib1g-dev libfuse2t64 libasound2t64 curl wmctrl
 
 # Download the latest Obsidian AppImage (ARM64).
-OBSIDIAN_TAG=$(curl -fsSL https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+OBSIDIAN_TAG=$(curl -fsSL https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest | grep -oP '"tag_name":\s*"\K[^"]+')
 OBSIDIAN_VERSION=${OBSIDIAN_TAG#v}
 wget -O /home/ubuntu/Obsidian.AppImage "https://github.com/obsidianmd/obsidian-releases/releases/download/${OBSIDIAN_TAG}/Obsidian-${OBSIDIAN_VERSION}-arm64.AppImage"
 chmod +x /home/ubuntu/Obsidian.AppImage
