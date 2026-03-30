@@ -3,9 +3,10 @@ export DEBIAN_FRONTEND=noninteractive
 # Consolidated setup for Xpra + Obsidian using Cloudflare Quick Tunnel.
 # This script installs required packages, configures Xpra (with password protection),
 # downloads and sets up Obsidian, updates UDP buffer sizes, and creates helper commands.
-# It creates two helper commands:
+# It creates three helper commands:
 #   - "tunnel": to restart the Cloudflared Quick Tunnel and display its unique URL.
 #   - "resetpwd": to update the Xpra password.
+#   - "updateobsidian": to download the latest Obsidian ARM64 AppImage.
 #
 # Note: The Xpra service is configured to use the password file at /home/ubuntu/.xpra/xpra_passwd.txt.
 
