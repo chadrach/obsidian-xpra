@@ -6,7 +6,7 @@ export DEBIAN_FRONTEND=noninteractive
 # It creates three helper commands:
 #   - "tunnel": to restart the Cloudflared Quick Tunnel and display its unique URL.
 #   - "resetpwd": to update the Xpra password.
-#   - "updateobsidian": to download the latest Obsidian ARM64 AppImage.
+#   - "update": to update system packages, Xpra, and Obsidian in one step.
 #
 # Note: The Xpra service is configured to use the password file at /home/ubuntu/.xpra/xpra_passwd.txt.
 
@@ -33,6 +33,7 @@ OBSIDIAN_TAG=$(curl -fsSL https://api.github.com/repos/obsidianmd/obsidian-relea
 OBSIDIAN_VERSION=${OBSIDIAN_TAG#v}
 wget -O /home/ubuntu/Obsidian.AppImage "https://github.com/obsidianmd/obsidian-releases/releases/download/${OBSIDIAN_TAG}/Obsidian-${OBSIDIAN_VERSION}-arm64.AppImage"
 chmod +x /home/ubuntu/Obsidian.AppImage
+echo "$OBSIDIAN_VERSION" > /home/ubuntu/.obsidian_version
 
 # Modify Xpra's content type configuration to force text rendering.
 sudo bash -c 'printf "class:obsidian=text\nrole:browser=text\n" > /usr/share/xpra/content-type/90_fallback.conf'
@@ -152,25 +153,38 @@ echo "Xpra password updated successfully."
 EOF'
 sudo chmod +x /usr/local/bin/resetpwd
 
-# Create the helper command "updateobsidian" to download the latest ARM64 AppImage.
-sudo bash -c 'cat << "EOF" > /usr/local/bin/updateobsidian
+# Create the helper command "update" to update system packages, Xpra, and Obsidian.
+sudo bash -c 'cat << "EOF" > /usr/local/bin/update
 #!/bin/bash
-echo "Fetching latest Obsidian release version..."
-LATEST_TAG=$(curl -fsSL https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest | grep '"'"'"tag_name"'"'"' | cut -d'"'"'"'"'"' -f4)
+echo "=== Updating system packages (including Xpra) ==="
+sudo apt update && sudo apt upgrade -y
+
+echo ""
+echo "=== Checking for Obsidian update ==="
+LATEST_TAG=$(curl -fsSL https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest | grep -oP '"tag_name":\s*"\K[^"]+')
 LATEST_VERSION=${LATEST_TAG#v}
-echo "Latest version: $LATEST_VERSION"
-echo "Stopping Obsidian..."
-pkill -f "Obsidian.AppImage" 2>/dev/null
-sleep 2
-echo "Downloading Obsidian ${LATEST_VERSION} (ARM64)..."
-wget -O /home/ubuntu/Obsidian.AppImage \
-  "https://github.com/obsidianmd/obsidian-releases/releases/download/${LATEST_TAG}/Obsidian-${LATEST_VERSION}-arm64.AppImage"
-chmod +x /home/ubuntu/Obsidian.AppImage
-echo "Restarting Obsidian..."
-DISPLAY=:100 /home/ubuntu/start-obsidian.sh
-echo "Obsidian updated to version ${LATEST_VERSION}."
+INSTALLED_VERSION=$(cat /home/ubuntu/.obsidian_version 2>/dev/null || echo "none")
+if [ "$LATEST_VERSION" = "$INSTALLED_VERSION" ]; then
+  echo "Obsidian is already up to date (v${LATEST_VERSION})"
+else
+  echo "Updating Obsidian from v${INSTALLED_VERSION} to v${LATEST_VERSION}..."
+  pkill -f "Obsidian.AppImage" 2>/dev/null
+  sleep 2
+  wget -O /home/ubuntu/Obsidian.AppImage \
+    "https://github.com/obsidianmd/obsidian-releases/releases/download/${LATEST_TAG}/Obsidian-${LATEST_VERSION}-arm64.AppImage"
+  chmod +x /home/ubuntu/Obsidian.AppImage
+  echo "$LATEST_VERSION" > /home/ubuntu/.obsidian_version
+  echo "Obsidian updated to v${LATEST_VERSION}"
+fi
+
+echo ""
+echo "=== Restarting Xpra ==="
+sudo systemctl restart xpra.service
+
+echo ""
+echo "=== Update complete. Reconnect via browser to resume. ==="
 EOF'
-sudo chmod +x /usr/local/bin/updateobsidian
+sudo chmod +x /usr/local/bin/update
 
 echo -e "\033[1;32mSetup complete\033[0m"
 echo -e "\033[1;33mIt is recommended that you reboot your system using: sudo reboot\033[0m"

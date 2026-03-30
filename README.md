@@ -40,7 +40,7 @@ After script completes, you can manage your tunnel and update your password usin
     
 - `tunnel` - to restart the Cloudflare Quick Tunnel and display the new URL. This will be necessary any time the system reboots.
 - `resetpwd` - to change your Xpra password later on.
-- `updateobsidian` - to download the latest ARM64 Obsidian AppImage and restart Obsidian. Run this when Obsidian prompts you to update.
+- `update` - to update system packages, Xpra, and Obsidian all at once. Safe to run any time; Obsidian will only be downloaded if a newer version is available.
 
 ## What's happening here?
 
