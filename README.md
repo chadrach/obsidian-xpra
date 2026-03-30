@@ -2,9 +2,9 @@
 Script to automate setting up Obsidian.md on a browser-accessible Xpra server.
 
 ## Overview
-This bash script automates the steps necessary to setup a **Ubuntu 22.04 (Linux) ARM64-based virtual machine** to run **Obsidian.md** within in a web browser using a light-weight remote desktop server called **Xpra**. Once running, the server-based Obsidian app can be accessed from anywhere using a unique URL and password. The script can be run with minimal Linux or terminal experience using the steps provided below. For purposes of this guide, the VM is running as an Instance on the Oracle Cloud platform that qualifies for their "free tier" (ARM/Ampere architecture with up to 4 CPU cores and 24GB memory at the time of writing).
+This bash script automates the steps necessary to setup a **Ubuntu 24.04 (Linux) ARM64-based virtual machine** to run **Obsidian.md** within in a web browser using a light-weight remote desktop server called **Xpra**. Once running, the server-based Obsidian app can be accessed from anywhere using a unique URL and password. The script can be run with minimal Linux or terminal experience using the steps provided below. For purposes of this guide, the VM is running as an Instance on the Oracle Cloud platform that qualifies for their "free tier" (ARM/Ampere architecture with up to 4 CPU cores and 24GB memory at the time of writing).
 
-The guide assumes you have created a new Oracle Cloud instance with a fresh install of Ubuntu 22.04 and have connected to the terminal via SSH or some other method. Instructions to create and connect to the instance can be found here: https://docs.oracle.com/en-us/iaas/Content/Compute/tutorials/first-linux-instance/overview.htm. 
+The guide assumes you have created a new Oracle Cloud instance with a fresh install of Ubuntu 24.04 and have connected to the terminal via SSH or some other method. Instructions to create and connect to the instance can be found here: https://docs.oracle.com/en-us/iaas/Content/Compute/tutorials/first-linux-instance/overview.htm. 
 
 **Warning:** Setting up access to a remote instance of Obsidian and all of your vault data is *inherently* more risky than Obsidian's normal use, where your files are stored and accessed only on your local machine. The security built into this setup is the *bare minimum* to try to ward off unwanted access to your Xpra server and your vault. Use caution with sensitive files. If in doubt, don't follow a guide posted by a stranger on the internet.
 
@@ -73,13 +73,14 @@ This solution attempts to split the difference: use a *free* (as of now) virtual
 Here's an overview of what the script does:
 
 1) Updates and upgrades Linux/Ubuntu system packages
-2) Installs several dependencies and libraries that are required for functionality, including:
+2) Adds the Xpra project's package repository and installs several dependencies and libraries that are required for functionality, including:
 	- **xpra**: The remote display server
+	- **xpra-html5**: Standalone HTML5 client served by Xpra for browser access
 	- **xvfb**: Virtual framebuffer required by Xpra
 	- **wget**: To download the Obsidian AppImage
 	- **zlib1g-dev**: Compression library needed by Obsidian
-	- **fuse**: Required to run AppImage files
-	- **libasound2**: Provides sound support for applications, required for Obsidian to run
+	- **libfuse2t64**: Required to run AppImage files
+	- **libasound2t64**: Provides sound support for applications, required for Obsidian to run
 	- **curl**: Used to setup Cloudflare
 	- **wmctrl**: To control the Obsidian window once its open
 3) Downloads the Linux ARM64 version of Obsidian and creates a start script that Xpra can use to launch Obsidian

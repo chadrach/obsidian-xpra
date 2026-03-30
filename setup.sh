@@ -18,8 +18,14 @@ fi
 # Update and upgrade system packages.
 sudo apt update && sudo apt upgrade -y
 
+# Add Xpra project repo to get xpra 6.4.x and xpra-html5 v20.
+sudo wget -O /usr/share/keyrings/xpra.asc https://xpra.org/xpra.asc
+sudo wget -O /etc/apt/sources.list.d/xpra.sources \
+  https://raw.githubusercontent.com/Xpra-org/xpra/master/packaging/repos/noble/xpra.sources
+sudo apt update
+
 # Install required dependencies.
-sudo apt install -y xpra xvfb wget zlib1g-dev fuse libasound2 curl wmctrl
+sudo apt install -y xpra xpra-html5 xvfb wget zlib1g-dev libfuse2t64 libasound2t64 curl wmctrl
 
 # Download the Obsidian AppImage (ARM64 version 1.8.7).
 wget -O /home/ubuntu/Obsidian.AppImage https://github.com/obsidianmd/obsidian-releases/releases/download/v1.8.7/Obsidian-1.8.7-arm64.AppImage
@@ -97,7 +103,7 @@ sudo systemctl start xpra.service
 
 # Install Cloudflared for tunneling.
 curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
-echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared jammy main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
+echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared noble main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
 sudo apt-get update && sudo apt-get install -y cloudflared
 
 # Update UDP buffer sizes for improved performance.
