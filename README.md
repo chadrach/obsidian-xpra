@@ -12,43 +12,22 @@ The guide assumes you have created a new Oracle Cloud instance with a fresh inst
 
 Follow these steps after you are connected to the virtual machine via a terminal (e.g., Windows PowerShell):
 
-1. **Create a New Script File:**  
-    Once connected to the VM via the terminal, create a new file called `setup.sh` using nano:
+1. **Download and run the script:**
+    Paste the following command into your terminal. It will download the script directly from this repository, make it executable, and run it:
 
     ```bash
-    nano setup.sh
-    ```
-    This command will create the file and open up a text editor called nano within the terminal window.
-
-2. **Paste the Script:**  
-    Copy the entire script from the setup.sh file within this repository and paste it into the nano editor. (Tip: In Windows PowerShell, a right-click will paste.)
-    
-3. **Save and Exit the Editor:**  
-    In nano, press `Ctrl+X`, then press `Y` to confirm saving, and finally press `Enter` to write the file.
-    
-4. **Make the Script Executable:**  
-    Run the following command to give the script execute permissions:
-
-    ```bash
-    chmod +x setup.sh
-    ```
-    
-5. **Run the Script:**  
-    Execute the script by running:
-    
-    ```
-    ./setup.sh
+    wget -O setup.sh https://raw.githubusercontent.com/chadrach/obsidian-xpra/main/setup.sh && chmod +x setup.sh && ./setup.sh
     ```
 
     The script will prompt you for your desired Xpra password. Follow the on-screen prompts. Whenever a screen pops up with a message, click `Enter` to continue.
 
-6. **Reboot system and initiate Cloudflare tunnel**
+2. **Reboot system and initiate Cloudflare tunnel**
 
     The script will install the necessary packages, set up Xpra and Obsidian, and prompt you to reboot.
 
     Once rebooted, use the `tunnel` command to start a Cloudflare Tunnel. When the tunnel is established, the terminal will display a unique URL to access Xpra and Obsidian.
 
-7. **Access Xpra and start using Obsidian**
+3. **Access Xpra and start using Obsidian**
 
     Navigate to the URL provided when you performed the `tunnel` command. If you want to skip an automatic redirect, go ahead and add `/connect.html` to the end of the URL so you get taken to the login screen.
 
