@@ -154,7 +154,7 @@ EOF'
 sudo chmod +x /usr/local/bin/resetpwd
 
 # Create the helper command "update" to update system packages, Xpra, and Obsidian.
-sudo bash -c 'cat << "EOF" > /usr/local/bin/update
+sudo tee /usr/local/bin/update > /dev/null << 'EOF'
 #!/bin/bash
 echo "=== Updating system packages (including Xpra) ==="
 sudo apt update && sudo apt upgrade -y
@@ -183,7 +183,7 @@ sudo systemctl restart xpra.service
 
 echo ""
 echo "=== Update complete. Reconnect via browser to resume. ==="
-EOF'
+EOF
 sudo chmod +x /usr/local/bin/update
 
 echo -e "\033[1;32mSetup complete\033[0m"
