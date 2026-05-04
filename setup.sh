@@ -25,7 +25,7 @@ sudo wget -O /etc/apt/sources.list.d/xpra.sources \
 sudo apt update
 
 # Install required dependencies.
-sudo apt install -y xpra xpra-html5 xvfb wget zlib1g-dev libfuse2t64 libasound2t64 curl wmctrl
+sudo apt install -y xpra xpra-html5 xvfb wget zlib1g-dev libfuse2t64 libasound2t64 curl wmctrl fonts-noto-color-emoji ibus-uniemoji
 
 # Download the latest Obsidian AppImage (ARM64).
 OBSIDIAN_TAG=$(curl -fsSL https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
