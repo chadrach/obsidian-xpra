@@ -157,7 +157,7 @@ sudo chmod +x /usr/local/bin/resetpwd
 sudo tee /usr/local/bin/update > /dev/null << 'EOF'
 #!/bin/bash
 echo "=== Updating system packages (including Xpra) ==="
-sudo apt update && sudo apt upgrade -y
+sudo apt-get -o DPkg::Lock::Timeout=120 update && sudo apt-get -o DPkg::Lock::Timeout=120 upgrade -y
 
 echo ""
 echo "=== Checking for Obsidian update ==="
