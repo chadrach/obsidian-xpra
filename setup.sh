@@ -35,6 +35,34 @@ wget -O /home/ubuntu/Obsidian.AppImage "https://github.com/obsidianmd/obsidian-r
 chmod +x /home/ubuntu/Obsidian.AppImage
 echo "$OBSIDIAN_VERSION" > /home/ubuntu/.obsidian_version
 
+# Configure fontconfig to prefer Noto Color Emoji for all font families.
+mkdir -p /home/ubuntu/.config/fontconfig/conf.d
+cat > /home/ubuntu/.config/fontconfig/conf.d/01-emoji.conf << 'FONTEOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+<fontconfig>
+  <alias>
+    <family>serif</family>
+    <prefer>
+      <family>Noto Color Emoji</family>
+    </prefer>
+  </alias>
+  <alias>
+    <family>sans-serif</family>
+    <prefer>
+      <family>Noto Color Emoji</family>
+    </prefer>
+  </alias>
+  <alias>
+    <family>monospace</family>
+    <prefer>
+      <family>Noto Color Emoji</family>
+    </prefer>
+  </alias>
+</fontconfig>
+FONTEOF
+fc-cache -f
+
 # Modify Xpra's content type configuration to force text rendering.
 sudo bash -c 'printf "class:obsidian=text\nrole:browser=text\n" > /usr/share/xpra/content-type/90_fallback.conf'
 
